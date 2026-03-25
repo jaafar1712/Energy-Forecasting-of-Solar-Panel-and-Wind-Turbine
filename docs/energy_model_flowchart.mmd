@@ -1,0 +1,32 @@
+flowchart TD
+    A[Start Script] --> B[Generate Synthetic Hourly Dataset]
+    B --> B1[Compute Lux: Diurnal + Seasonal + Cloud Noise]
+    B --> B2[Generate Wind Speed: Weibull]
+    B --> B3[Generate Wind Direction: Uniform 0 to 360]
+    B --> B4[Generate Temperature: Seasonal + Daily + Lux Correlation]
+    B --> B5[Compute Power: Solar Term + Wind Term]
+    B5 --> B6[Compute Current from Power and Voltage]
+    B6 --> C[Save energy_dataset.csv]
+
+    C --> D[Save Static Plots]
+    D --> D1[Week Lux vs Power]
+    D --> D2[Wind Speed Histogram]
+    D --> D3[Power Histogram]
+
+    D --> E{Live Plots Enabled?}
+    E -->|Yes| F[Animate Live Dashboard]
+    E -->|No| G[Skip Live Dashboard]
+    F --> H[Train Baseline RF Model]
+    G --> H
+
+    H --> H1[Add Cyclic Time Features]
+    H1 --> H2[Random Train-Test Split]
+    H2 --> H3[Evaluate MAE and R2]
+    H3 --> H4[Save power_model_rf.joblib]
+
+    H4 --> I[Train 1-Hour Ahead RF Forecast Model]
+    I --> I1[Shift Target by -1 Hour]
+    I1 --> I2[Chronological Train-Test Split]
+    I2 --> I3[Evaluate Forecast MAE and R2]
+    I3 --> I4[Save power_forecast_1h_rf.joblib]
+    I4 --> J[End]
