@@ -14,6 +14,7 @@ This project builds a synthetic Digital Twin dataset for a hybrid Solar/Wind ene
 ## Files in This Repository
 
 - [train_energy_model.py](train_energy_model.py): Main pipeline (data generation, plotting, training, evaluation, export)
+- [dashboard.py](dashboard.py): One-page interactive dashboard for results visualization
 - [docs/energy_model_explanation.md](docs/energy_model_explanation.md): Detailed technical explanation
 - [docs/energy_model_explanation.pdf](docs/energy_model_explanation.pdf): Shareable report (PDF)
 - [docs/energy_model_flowchart.mmd](docs/energy_model_flowchart.mmd): Mermaid flowchart source
@@ -48,7 +49,7 @@ From PowerShell in project root:
 
 ```powershell
 cd "c:\Users\ACER\solar panel"
-.\.venv\Scripts\python.exe -m pip install numpy pandas scikit-learn matplotlib joblib reportlab
+.\.venv\Scripts\python.exe -m pip install numpy pandas scikit-learn matplotlib joblib reportlab streamlit plotly
 ```
 
 ## Run the Full Pipeline
@@ -64,6 +65,22 @@ cd "c:\Users\ACER\solar panel"
 ```powershell
 .\.venv\Scripts\python.exe .\train_energy_model.py --no-live-plots
 ```
+
+## One-Page Dashboard
+
+Launch the interactive dashboard:
+
+```powershell
+.\.venv\Scripts\python.exe -m streamlit run .\dashboard.py
+```
+
+Dashboard includes:
+
+- KPI cards for energy and power statistics
+- Interactive time filtering
+- Time-series charts (power, lux, temperature)
+- Distribution and correlation-style scatter plots
+- Baseline and forecast model performance metrics
 
 ## Expected Outputs (Generated Locally)
 
