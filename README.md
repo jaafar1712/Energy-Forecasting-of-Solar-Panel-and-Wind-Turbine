@@ -49,7 +49,7 @@ From PowerShell in project root:
 
 ```powershell
 cd "c:\Users\ACER\solar panel"
-.\.venv\Scripts\python.exe -m pip install numpy pandas scikit-learn matplotlib joblib reportlab streamlit plotly
+.\.venv\Scripts\python.exe -m pip install numpy pandas scikit-learn matplotlib joblib reportlab streamlit plotly requests
 ```
 
 ## Run the Full Pipeline
@@ -118,6 +118,22 @@ Note: Large/generated artifacts are intentionally excluded from Git tracking in 
 Output:
 
 - [docs/energy_model_explanation.pdf](docs/energy_model_explanation.pdf)
+
+## Home Assistant Bridge
+
+Use [ha_ai_bridge.py](ha_ai_bridge.py) to read live Home Assistant sensor values, run local inference, and publish the prediction back to `input_number.ai_prediction`.
+
+Example PowerShell setup:
+
+```powershell
+$env:HA_URL = "http://127.0.0.1:8123"
+$env:HA_TOKEN = "your_long_lived_access_token"
+$env:MODEL_PATH = ".\power_model_rf.joblib"
+$env:FEATURE_ENTITY_MAP = '{"solar_voltage":"sensor.solar_voltage","wind_speed":"sensor.wind_speed"}'
+.\.venv\Scripts\python.exe .\ha_ai_bridge.py --once
+```
+
+The bridge uses `requests` for API calls, retries failed requests with backoff, and can run continuously without `--once`.
 
 ## Future Improvements
 
