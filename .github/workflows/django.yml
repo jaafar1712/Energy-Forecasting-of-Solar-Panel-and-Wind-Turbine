@@ -1,30 +1,50 @@
-name: Django CI
+name: Python CI
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "main", "dev" ]
   pull_request:
-    branches: [ "dev" ]
+    branches: [ "main", "dev" ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Run Tests
-      run: |
-        python manage.py test
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy pandas scikit-learn matplotlib joblib streamlit plotly reportlab
+
+      - name: Run training pipeline smoke test
+        run: |
+          if [ -f train_energy_model.py ]; then
+            python train_energy_model.py --no-live-plots
+          else
+            echo "train_energy_model.py not found in repository root."
+            exit 1
+          fi
+
+      - name: Verify generated artifacts
+        run: |
+          test -f energy_dataset.csv
+          test -f power_model_rf.joblib
+          test -f power_forecast_1h_rf.joblib
+
+      - name: Dashboard import smoke test
+        run: |
+          python -c "import dashboard; print('dashboard_import_ok')"
